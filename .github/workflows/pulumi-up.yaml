@@ -1,9 +1,11 @@
-name: Pulumi Preview
+name: Pulumi Up
 on:
-  - pull_request
+  push:
+    branches:
+      - master
 jobs:
   preview:
-    name: Preview
+    name: Update
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,7 +21,7 @@ jobs:
       - run: npm install
       - uses: pulumi/actions@v3
         with:
-          command: preview
+          command: up
           stack-name: dev
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
