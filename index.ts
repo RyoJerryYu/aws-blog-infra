@@ -1,9 +1,21 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import * as awsx from "@pulumi/awsx";
+import { LogBucket } from "./logBucket";
 
-// Create an AWS resource (S3 Bucket)
-const bucket = new aws.s3.Bucket("my-bucket");
+const stackName = `${pulumi.getProject()}-${pulumi.getStack()}`;
+const stackConfig = new pulumi.Config("stack");
+const awsConfig = new pulumi.Config("aws");
 
-// Export the name of the bucket
-export const bucketName = bucket.id;
+const config = {
+    region: awsConfig.require("region"),
+    hostedZone: stackConfig.require("hostedZone"),
+}
+
+
+const logBucket = new LogBucket(`logBucket`, {
+    stackName: stackName,
+    region: config.region,
+})
+
+export const bucketName = logBucket.bucket.bucket;
+
