@@ -22,7 +22,6 @@ const logBucket = new LogBucket(`logBucket`, {
 const cluster = new Cluster(`cluster`, {
     stackName: stackName,
     clusterName: stackName,
-    region: config.region,
 })
 
 export const bucketName = logBucket.bucket.bucket;

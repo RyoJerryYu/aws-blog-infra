@@ -3,17 +3,19 @@ import * as aws from "@pulumi/aws";
 import * as eks from "@pulumi/eks";
 import * as k8s from "@pulumi/kubernetes";
 
+import { ClusterNetwork } from "./networks";
+
 
 export interface ClusterArgs {
     stackName: string;
     clusterName: string;
-    region?: pulumi.Input<string>;
+    // use region configured in provider
+    // region?: pulumi.Input<string>;
 }
 
 export class Cluster extends pulumi.ComponentResource {
 
-    public vpc: pulumi.Output<aws.ec2.Vpc>;
-    public region: pulumi.Output<string>;
+    public vpcId: pulumi.Output<string>;
 
     constructor(
         name: string,
@@ -26,29 +28,21 @@ export class Cluster extends pulumi.ComponentResource {
         const stackName = args.stackName;
         const childOpts = { ...opts, parent: this };
 
-        const region = args.region ? pulumi.output(args.region) : aws.getRegionOutput({}, opts).name;
 
-        const vpc = new aws.ec2.Vpc("vpc", {
-            cidrBlock: "10.0.0.0/16",
-
-            enableDnsHostnames: true,
-            tags: {
-                Name: `${clusterName}-vpc`,
-                PulumiStack: stackName,
-            }
+        const network = new ClusterNetwork(`network`, {
+            stackName: stackName,
+            clusterName: clusterName,
         }, childOpts);
 
-        const igw = new aws.ec2.InternetGateway("igw", {
-            vpcId: vpc.id,
-            tags: {
-                Name: `${clusterName}-igw`,
-                PulumiStack: stackName,
-            }
+        const cluster = new eks.Cluster("cluster", {
+            name: clusterName,
+            vpcId: network.vpcId,
+            publicSubnetIds: network.publicSubnetIds,
+            skipDefaultNodeGroup: true,
         }, childOpts);
 
 
 
-        this.vpc = pulumi.output(vpc);
-        this.region = region;
+        this.vpcId = pulumi.output(network.vpcId);
     }
 }
