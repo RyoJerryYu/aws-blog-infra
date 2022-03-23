@@ -22,7 +22,7 @@ export class LogBucket extends pulumi.ComponentResource {
 
 
         const region = aws.getRegionOutput().name;
-        const logBucketName = `${args.bucketNamePrefix}-${region}`;
+        const logBucketName = pulumi.interpolate`${args.bucketNamePrefix}-${region}`;
         const logBucket = new aws.s3.Bucket("logBucket", {
             bucket: logBucketName,
             policy: { // to allow access from LB log
