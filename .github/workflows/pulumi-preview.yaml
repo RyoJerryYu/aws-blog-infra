@@ -1,6 +1,7 @@
 name: Pulumi Preview
 on:
   - pull_request
+  - workflow_dispatch
 jobs:
   preview:
     name: Preview
