@@ -4,13 +4,12 @@ import * as aws from "@pulumi/aws";
 
 
 export interface LogBucketArgs {
-    stackName: string;
-    region: string;
+    bucketNamePrefix: string;
 }
 
 export class LogBucket extends pulumi.ComponentResource {
 
-    public bucket: pulumi.Output<aws.s3.Bucket>;
+    public bucket: aws.s3.Bucket;
 
     constructor(
         name: string,
@@ -22,17 +21,18 @@ export class LogBucket extends pulumi.ComponentResource {
         const childOpts = { ...opts, parent: this };
 
 
-        const logBucketName = `${args.stackName}-logs`;
+        const region = aws.getRegionOutput().name;
+        const logBucketName = `${args.bucketNamePrefix}-${region}`;
         const logBucket = new aws.s3.Bucket("logBucket", {
             bucket: logBucketName,
             policy: { // to allow access from LB log
                 Version: "2012-10-17",
                 Statement: [
                     {
-                        Sid: "AWSConsoleStmt-1645156057822",
+                        Sid: "AWSELBLogs",
                         Effect: "Allow",
                         Principal: {
-                            AWS: aws.elb.getServiceAccountOutput({ region: args.region }).arn
+                            AWS: aws.elb.getServiceAccountOutput({ region: region }).arn
                         },
                         Action: "s3:PutObject",
                         Resource: `arn:aws:s3:::${logBucketName}/*`,
@@ -64,7 +64,7 @@ export class LogBucket extends pulumi.ComponentResource {
             }
         }, childOpts);
 
-        this.bucket = pulumi.output(logBucket);
+        this.bucket = logBucket;
         this.registerOutputs();
     }
 }

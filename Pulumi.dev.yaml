@@ -1,3 +1,4 @@
 config:
   aws:region: ap-northeast-1
-  stack:hostedZone: ryo-okami.xyz
+  log:bucketNamePrefix: ryo-okami.xyz.log
+  web:domainName: test.ryo-okami.xyz

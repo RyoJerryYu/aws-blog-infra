@@ -1,21 +1,28 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { LogBucket } from "./logBucket";
+import { WebSite } from "./website";
+import { tokyoAWS, CloudFrontAWS } from "./providers/aws";
 
-const stackName = `${pulumi.getProject()}-${pulumi.getStack()}`;
-const stackConfig = new pulumi.Config("stack");
-const awsConfig = new pulumi.Config("aws");
 
-const config = {
-    region: awsConfig.require("region"),
-    hostedZone: stackConfig.require("hostedZone"),
-}
 
+
+const logConfig = new pulumi.Config("log");
 
 const logBucket = new LogBucket(`logBucket`, {
-    stackName: stackName,
-    region: config.region,
+    bucketNamePrefix: logConfig.require("bucketNamePrefix"),
+}, { provider: tokyoAWS });
+
+export const logBucketName = logBucket.bucket.bucket;
+
+
+
+
+const webConfig = new pulumi.Config("web");
+
+const webSite = new WebSite(`testWebSite`, {
+    domainName: webConfig.require("domainName"),
+    logBucket: logBucket.bucket,
+    logPrefix: "testWebSite/",
 })
-
-export const bucketName = logBucket.bucket.bucket;
-
+export const webSiteDomainName = webSite.DomainName;
