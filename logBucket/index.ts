@@ -35,7 +35,7 @@ export class LogBucket extends pulumi.ComponentResource {
                             AWS: aws.elb.getServiceAccountOutput({ region: region }).arn
                         },
                         Action: "s3:PutObject",
-                        Resource: `arn:aws:s3:::${logBucketName}/*`,
+                        Resource: pulumi.interpolate`arn:aws:s3:::${logBucketName}/*`,
                     },
                     {
                         Sid: "AWSLogDeliveryWrite",
@@ -44,7 +44,7 @@ export class LogBucket extends pulumi.ComponentResource {
                             Service: "delivery.logs.amazonaws.com"
                         },
                         Action: "s3:PutObject",
-                        Resource: `arn:aws:s3:::${logBucketName}/*`,
+                        Resource: pulumi.interpolate`arn:aws:s3:::${logBucketName}/*`,
                         Condition: {
                             StringEquals: {
                                 "s3:x-amz-acl": "bucket-owner-full-control"
@@ -58,7 +58,7 @@ export class LogBucket extends pulumi.ComponentResource {
                             Service: "delivery.logs.amazonaws.com"
                         },
                         Action: "s3:GetBucketAcl",
-                        Resource: `arn:aws:s3:::${logBucketName}`,
+                        Resource: pulumi.interpolate`arn:aws:s3:::${logBucketName}`,
                     }
                 ]
             }
