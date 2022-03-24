@@ -59,6 +59,17 @@ export class LogBucket extends pulumi.ComponentResource {
                         },
                         Action: "s3:GetBucketAcl",
                         Resource: pulumi.interpolate`arn:aws:s3:::${logBucketName}`,
+                    },
+                    {
+                        "Sid": "S3ServerAccessLogsPolicy",
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "logging.s3.amazonaws.com"
+                        },
+                        "Action": [
+                            "s3:PutObject"
+                        ],
+                        "Resource": pulumi.interpolate`arn:aws:s3:::${logBucketName}/*`,
                     }
                 ]
             }
