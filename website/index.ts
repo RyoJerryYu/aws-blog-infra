@@ -61,7 +61,13 @@ export class WebSite extends pulumi.ComponentResource {
             },
             versioning: {
                 enabled: false,
-            }
+            },
+            loggings: [
+                {
+                    targetBucket: args.logBucket.bucket,
+                    targetPrefix: `s3-${args.domainName}`,
+                }
+            ]
         }, parentOpts);
 
         const publicAccessBlock = new aws.s3.BucketPublicAccessBlock("contentBucketPublicAccessBlock", {
