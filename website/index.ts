@@ -21,7 +21,6 @@ function getZoneFromDomain(domain: pulumi.Input<string>): pulumi.Output<string> 
 export interface WebSiteArgs {
     domainName: string;
     logBucket: aws.s3.Bucket;
-    logPrefix: string;
 }
 
 export class WebSite extends pulumi.ComponentResource {
@@ -130,13 +129,13 @@ export class WebSite extends pulumi.ComponentResource {
             priceClass: "PriceClass_100",
 
 
-            // customErrorResponses: [
-            //     {
-            //         errorCode: 403,
-            //         responsePagePath: "/index.html",
-            //         responseCode: 200,
-            //     }
-            // ],
+            customErrorResponses: [
+                {
+                    errorCode: 403,
+                    responsePagePath: "/index.html",
+                    responseCode: 200,
+                }
+            ],
             restrictions: {
                 geoRestriction: {
                     restrictionType: "none",
@@ -150,7 +149,7 @@ export class WebSite extends pulumi.ComponentResource {
             loggingConfig: {
                 bucket: args.logBucket.bucketDomainName,
                 includeCookies: false,
-                prefix: `${args.logPrefix}`,
+                prefix: `cloudFront-${args.domainName}`,
             }
         }, parentOpts);
 
