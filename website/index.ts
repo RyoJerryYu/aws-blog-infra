@@ -65,7 +65,7 @@ export class WebSite extends pulumi.ComponentResource {
             loggings: [
                 {
                     targetBucket: args.logBucket.bucket,
-                    targetPrefix: `s3-${args.domainName}`,
+                    targetPrefix: `s3-${args.domainName}/`,
                 }
             ]
         }, parentOpts);
@@ -155,7 +155,7 @@ export class WebSite extends pulumi.ComponentResource {
             loggingConfig: {
                 bucket: args.logBucket.bucketDomainName,
                 includeCookies: false,
-                prefix: `cloudFront-${args.domainName}`,
+                prefix: `cloudFront-${args.domainName}/`,
             }
         }, parentOpts);
 
