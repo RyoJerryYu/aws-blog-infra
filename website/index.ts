@@ -130,13 +130,13 @@ export class WebSite extends pulumi.ComponentResource {
             priceClass: "PriceClass_100",
 
 
-            customErrorResponses: [
-                {
-                    errorCode: 403,
-                    responsePagePath: "/index.html",
-                    responseCode: 200,
-                }
-            ],
+            // customErrorResponses: [
+            //     {
+            //         errorCode: 403,
+            //         responsePagePath: "/index.html",
+            //         responseCode: 200,
+            //     }
+            // ],
             restrictions: {
                 geoRestriction: {
                     restrictionType: "none",
