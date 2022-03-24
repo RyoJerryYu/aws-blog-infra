@@ -23,6 +23,5 @@ const webConfig = new pulumi.Config("web");
 const webSite = new WebSite(`testWebSite`, {
     domainName: webConfig.require("domainName"),
     logBucket: logBucket.bucket,
-    logPrefix: "testWebSite/",
 })
 export const webSiteDomainName = webSite.DomainName;
