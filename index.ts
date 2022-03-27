@@ -22,6 +22,7 @@ const webConfig = new pulumi.Config("web");
 
 const webSite = new WebSite(`testWebSite`, {
     domainName: webConfig.require("domainName"),
+    elbDomainName: webConfig.require("elbDomainName"),
     logBucket: logBucket.bucket,
 })
 export const webSiteDomainName = webSite.DomainName;

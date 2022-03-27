@@ -20,6 +20,7 @@ function getZoneFromDomain(domain: pulumi.Input<string>): pulumi.Output<string> 
 
 export interface WebSiteArgs {
     domainName: string;
+    elbDomainName: string;
     logBucket: aws.s3.Bucket;
 }
 
@@ -75,7 +76,7 @@ export class WebSite extends pulumi.ComponentResource {
             blockPublicAcls: true,
             blockPublicPolicy: false,
             ignorePublicAcls: true,
-            restrictPublicBuckets: false,
+            restrictPublicBuckets: true,
         }, parentOpts);
 
 
@@ -95,6 +96,27 @@ export class WebSite extends pulumi.ComponentResource {
         /**
          * CloudFront
          */
+        const elbCachePolicy = new aws.cloudfront.CachePolicy("elbCachePolicy", {
+            comment: "ELB Cache Policy",
+            minTtl: 60,
+            maxTtl: 60,
+            defaultTtl: 60,
+            parametersInCacheKeyAndForwardedToOrigin: {
+                headersConfig: {
+                    headerBehavior: "none",
+                },
+                cookiesConfig: {
+                    cookieBehavior: "none",
+                },
+                queryStringsConfig: {
+                    queryStringBehavior: "none",
+                },
+            },
+        })
+        const elbOriginRequestPolicyId = aws.cloudfront.getOriginRequestPolicyOutput({
+            name: "Managed-AllViewer",
+        }, parentOpts).apply(policy => policy.id!);
+
 
         const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity("originAccessIdentity", {
             comment: "Origin Access Identity for static website",
@@ -112,9 +134,33 @@ export class WebSite extends pulumi.ComponentResource {
                     s3OriginConfig: {
                         originAccessIdentity: originAccessIdentity.cloudfrontAccessIdentityPath,
                     }
+                },
+                {
+                    originId: args.elbDomainName,
+                    domainName: args.elbDomainName,
+                    customOriginConfig: {
+                        originProtocolPolicy: "https-only",
+                        httpPort: 80,
+                        httpsPort: 443,
+                        originSslProtocols: ["TLSv1", "TLSv1.1", "TLSv1.2"],
+                    }
                 }
             ],
             defaultRootObject: "index.html",
+            
+
+            orderedCacheBehaviors: [
+                {
+                    targetOriginId: args.elbDomainName,
+                    pathPattern: "/caculate/*",
+                    viewerProtocolPolicy: "redirect-to-https",
+                    allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
+
+                    cachePolicyId: elbCachePolicy.id,
+                    originRequestPolicyId: elbOriginRequestPolicyId,
+                }
+            ],
 
             defaultCacheBehavior: {
                 targetOriginId: contentBucket.arn,
