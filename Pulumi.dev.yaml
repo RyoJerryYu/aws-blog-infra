@@ -2,4 +2,6 @@ config:
   aws:region: ap-northeast-1
   log:bucketNamePrefix: ryo-okami.xyz.log
   web:domainName: test.ryo-okami.xyz
-  web:elbDomainName: elb.ryo-okami.xyz
+  web:elbDomainName: alb.ryo-okami.xyz
+  prodweb:domainName: blog.ryo-okami.xyz
+  prodweb:elbDomainName: alb.ryo-okami.xyz
