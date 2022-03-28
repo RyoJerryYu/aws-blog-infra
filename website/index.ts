@@ -30,7 +30,7 @@ export class WebSite extends pulumi.ComponentResource {
     public contentBucketUri: pulumi.Output<string>;
     public DomainName: pulumi.Output<string>;
     public bucketDomainName: pulumi.Output<string>;
-    public bucketEndpoint:pulumi.Output<string>;
+    public bucketEndpoint: pulumi.Output<string>;
 
 
     constructor(
@@ -96,6 +96,11 @@ export class WebSite extends pulumi.ComponentResource {
         /**
          * CloudFront
          */
+        const edgeLambdaArn = aws.lambda.getFunctionOutput({
+            functionName: "CloudFrontS3SimplfyPath",
+            qualifier: "1",
+        }, { ...parentOpts, provider: CloudFrontAWS }).qualifiedArn;
+
         const elbCachePolicy = new aws.cloudfront.CachePolicy("elbCachePolicy", {
             comment: "ELB Cache Policy",
             minTtl: 60,
@@ -147,7 +152,7 @@ export class WebSite extends pulumi.ComponentResource {
                 }
             ],
             defaultRootObject: "index.html",
-            
+
 
             orderedCacheBehaviors: [
                 {
@@ -176,6 +181,14 @@ export class WebSite extends pulumi.ComponentResource {
                 minTtl: 0,
                 defaultTtl: 600,
                 maxTtl: 600,
+
+                lambdaFunctionAssociations: [
+                    {
+                        eventType: "origin-request",
+                        includeBody: false,
+                        lambdaArn: edgeLambdaArn,
+                    }
+                ],
             },
 
             priceClass: "PriceClass_100",
