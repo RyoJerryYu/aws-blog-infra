@@ -1,0 +1,3 @@
+name: aws-blog-infra.common
+runtime: nodejs
+description: The infra of my blog on AWS.

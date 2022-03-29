@@ -21,7 +21,9 @@ function getZoneFromDomain(domain: pulumi.Input<string>): pulumi.Output<string> 
 export interface WebSiteArgs {
     domainName: string;
     elbDomainName: string;
-    logBucket: aws.s3.Bucket;
+    logBucketName: pulumi.Input<string>;
+    logBucketDomainName: pulumi.Input<string>;
+    elbCachePolicy: aws.cloudfront.CachePolicy;
 }
 
 export class WebSite extends pulumi.ComponentResource {
@@ -65,7 +67,7 @@ export class WebSite extends pulumi.ComponentResource {
             },
             loggings: [
                 {
-                    targetBucket: args.logBucket.bucket,
+                    targetBucket: args.logBucketName,
                     targetPrefix: `s3-${args.domainName}/`,
                 }
             ]
@@ -101,23 +103,6 @@ export class WebSite extends pulumi.ComponentResource {
             qualifier: "1",
         }, { ...parentOpts, provider: CloudFrontAWS }).qualifiedArn;
 
-        const elbCachePolicy = new aws.cloudfront.CachePolicy("elbCachePolicy", {
-            comment: "ELB Cache Policy",
-            minTtl: 60,
-            maxTtl: 60,
-            defaultTtl: 60,
-            parametersInCacheKeyAndForwardedToOrigin: {
-                headersConfig: {
-                    headerBehavior: "none",
-                },
-                cookiesConfig: {
-                    cookieBehavior: "none",
-                },
-                queryStringsConfig: {
-                    queryStringBehavior: "none",
-                },
-            },
-        })
         const elbOriginRequestPolicyId = aws.cloudfront.getOriginRequestPolicyOutput({
             name: "Managed-AllViewer",
         }, parentOpts).apply(policy => policy.id!);
@@ -162,7 +147,7 @@ export class WebSite extends pulumi.ComponentResource {
                     allowedMethods: ["GET", "HEAD", "OPTIONS"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
 
-                    cachePolicyId: elbCachePolicy.id,
+                    cachePolicyId: args.elbCachePolicy.id,
                     originRequestPolicyId: elbOriginRequestPolicyId,
                 }
             ],
@@ -212,7 +197,7 @@ export class WebSite extends pulumi.ComponentResource {
             },
 
             loggingConfig: {
-                bucket: args.logBucket.bucketDomainName,
+                bucket: args.logBucketDomainName,
                 includeCookies: false,
                 prefix: `cloudFront-${args.domainName}/`,
             }
