@@ -25,5 +25,6 @@ jobs:
         with:
           command: up
           stack-name: dev
+          work-dir: ./website
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
