@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { LogBucket } from "./logBucket";
+import { MakeElbCachePolicy } from "./cloudFront";
 import { tokyoAWS, CloudFrontAWS } from "../providers/aws";
 
 
@@ -13,3 +14,8 @@ const logBucket = new LogBucket(`logBucket`, {
 
 export const logBucketName = logBucket.bucket.bucket;
 export const logBucketDomainName = logBucket.bucket.bucketDomainName;
+
+
+
+const elbCachePolicy = MakeElbCachePolicy();
+export const elbCachePolicyId = elbCachePolicy.id;

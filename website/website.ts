@@ -23,7 +23,7 @@ export interface WebSiteArgs {
     elbDomainName: string;
     logBucketName: pulumi.Input<string>;
     logBucketDomainName: pulumi.Input<string>;
-    elbCachePolicy: aws.cloudfront.CachePolicy;
+    elbCachePolicyId: pulumi.Input<string>;
 }
 
 export class WebSite extends pulumi.ComponentResource {
@@ -147,7 +147,7 @@ export class WebSite extends pulumi.ComponentResource {
                     allowedMethods: ["GET", "HEAD", "OPTIONS"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
 
-                    cachePolicyId: args.elbCachePolicy.id,
+                    cachePolicyId: args.elbCachePolicyId,
                     originRequestPolicyId: elbOriginRequestPolicyId,
                 }
             ],
