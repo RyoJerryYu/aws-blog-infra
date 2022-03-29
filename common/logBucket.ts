@@ -73,7 +73,7 @@ export class LogBucket extends pulumi.ComponentResource {
                     }
                 ]
             },
-        },  { ...childOpts, import: "ryo-okami.xyz.log-ap-northeast-1" });
+        }, childOpts);
 
         const publicAccessBlock = new aws.s3.BucketPublicAccessBlock("contentBucketPublicAccessBlock", {
             bucket: logBucket.bucket,
