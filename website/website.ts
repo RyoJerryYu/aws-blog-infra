@@ -176,7 +176,7 @@ export class WebSite extends pulumi.ComponentResource {
                 ],
             },
 
-            priceClass: "PriceClass_100",
+            priceClass: "PriceClass_200",
 
 
             customErrorResponses: [
