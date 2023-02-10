@@ -1,7 +1,7 @@
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { Certificate } from "./certificate";
+import * as pulumi from "@pulumi/pulumi";
 import { CloudFrontAWS } from "../providers/aws";
+import { Certificate } from "./certificate";
 
 function getZoneFromDomain(
   domain: pulumi.Input<string>
@@ -25,6 +25,8 @@ export interface WebSiteArgs {
   logBucketName: pulumi.Input<string>;
   logBucketDomainName: pulumi.Input<string>;
   elbCachePolicyId: pulumi.Input<string>;
+  viewerRequestLambdaArn: pulumi.Input<string>;
+  originRequestLambdaArn: pulumi.Input<string>;
 }
 
 export class WebSite extends pulumi.ComponentResource {
@@ -185,6 +187,19 @@ export class WebSite extends pulumi.ComponentResource {
           minTtl: 600,
           defaultTtl: 86400, // 1 day
           maxTtl: 2592000, // 30 days
+
+          lambdaFunctionAssociations: [
+            {
+              eventType: "viewer-request",
+              lambdaArn: args.viewerRequestLambdaArn,
+              includeBody: false,
+            },
+            {
+              eventType: "origin-request",
+              lambdaArn: args.originRequestLambdaArn,
+              includeBody: false,
+            },
+          ],
         },
 
         priceClass: "PriceClass_200",
