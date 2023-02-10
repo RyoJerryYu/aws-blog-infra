@@ -61,9 +61,9 @@ const nextBlogViewerRequest = new aws.lambda.Function(
     }),
     handler: "index.handler",
     role: lambdaRole.arn,
-    runtime: "nodejs12.x",
+    runtime: "nodejs16.x",
     memorySize: 128,
-    timeout: 30,
+    timeout: 5,
     publish: true,
   },
   { provider: CloudFrontAWS }
@@ -77,9 +77,9 @@ const nextBlogOriginRequest = new aws.lambda.Function(
     }),
     handler: "index.handler",
     role: lambdaRole.arn,
-    runtime: "nodejs12.x",
+    runtime: "nodejs16.x",
     memorySize: 128,
-    timeout: 30,
+    timeout: 5,
     publish: true,
   },
   { provider: CloudFrontAWS }
