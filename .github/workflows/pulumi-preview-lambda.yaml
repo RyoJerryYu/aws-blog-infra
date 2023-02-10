@@ -1,4 +1,4 @@
-name: Pulumi Preview
+name: Pulumi Preview Lambda
 on:
   pull_request:
     paths:
