@@ -1,7 +1,7 @@
-name: Pulumi Up
+name: Pulumi Up Blog Prod
 on:
   workflow_dispatch:
-    
+
 jobs:
   preview:
     name: Update
@@ -21,7 +21,7 @@ jobs:
       - uses: pulumi/actions@v3
         with:
           command: up
-          stack-name: test
+          stack-name: blog
           work-dir: ./website
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
