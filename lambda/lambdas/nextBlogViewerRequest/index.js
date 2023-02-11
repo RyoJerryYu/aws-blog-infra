@@ -3,10 +3,11 @@
 const path = require("path");
 exports.handler = async (event) => {
   const request = event.Records[0].cf.request;
-  const domain = "test.ryo-okami.xyz";
+  const host = request.headers.host[0].value;
   // Redirect www to naked
-  if (request.headers.host[0].value.includes("www")) {
+  if (host.includes("www")) {
     console.log("www found");
+    const domain = host.replace("www.", "");
     return {
       status: "301",
       statusDescription: "Moved permanently",
@@ -29,7 +30,7 @@ exports.handler = async (event) => {
         location: [
           {
             key: "Location",
-            value: `https://${domain}${request.uri.slice(0, -1)}`,
+            value: `https://${host}${request.uri.slice(0, -1)}`,
           },
         ],
       },
