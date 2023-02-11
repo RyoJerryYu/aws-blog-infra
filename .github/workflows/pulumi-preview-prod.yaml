@@ -1,4 +1,4 @@
-name: Pulumi Preview
+name: Pulumi Preview Blog Prod
 on:
   - pull_request
   - workflow_dispatch
