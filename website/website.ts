@@ -190,6 +190,11 @@ export class WebSite extends pulumi.ComponentResource {
 
           lambdaFunctionAssociations: [
             {
+              eventType: "viewer-request",
+              lambdaArn: args.viewerRequestLambdaArn,
+              includeBody: false,
+            },
+            {
               eventType: "origin-request",
               lambdaArn: args.originRequestLambdaArn,
               includeBody: false,
