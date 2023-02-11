@@ -21,7 +21,7 @@ exports.handler = async (event) => {
   }
   // Rewrite clean URLs (adding index.html)
   if (!path.extname(request.uri)) {
-    request.uri = request.uri.replace(/\/?$/, "/index.html");
+    request.uri = request.uri.replace(/\/?$/, ".html");
   }
   return request;
 };
