@@ -1,3 +1,4 @@
+import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { WebSite } from "./website";
 
@@ -9,7 +10,12 @@ const commonStack = new pulumi.StackReference(
 );
 const logBucketName = commonStack.getOutput("logBucketName");
 const logBucketDomainName = commonStack.getOutput("logBucketDomainName");
-const elbCachePolicyId = commonStack.getOutput("elbCachePolicyId");
+// const elbCachePolicyId = commonStack.getOutput("elbCachePolicyId");
+const elbCachePolicyId = aws.cloudfront
+  .getCachePolicyOutput({
+    name: "CachingDisabled",
+  })
+  .apply((policy) => policy.id!);
 
 const lambdaStack = new pulumi.StackReference(
   `${org}/aws-blog-infra.lambda/lambda`
