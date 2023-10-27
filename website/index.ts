@@ -13,7 +13,7 @@ const logBucketDomainName = commonStack.getOutput("logBucketDomainName");
 // const elbCachePolicyId = commonStack.getOutput("elbCachePolicyId");
 const elbCachePolicyId = aws.cloudfront
   .getCachePolicyOutput({
-    name: "CachingDisabled",
+    name: "Managed-CachingDisabled",
   })
   .apply((policy) => policy.id!);
 
