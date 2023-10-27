@@ -24,7 +24,7 @@ const nextBlogOriginRequestQualifiedArn = lambdaStack.getOutput(
 const webConfig = new pulumi.Config("web");
 const webSite = new WebSite(`testWebSite`, {
   domainName: webConfig.require("domainName"),
-  elbDomainName: webConfig.require("elbDomainName"),
+  serverInstanceId: webConfig.require("serverInstanceId"),
   logBucketName: logBucketName,
   logBucketDomainName: logBucketDomainName,
   elbCachePolicyId: elbCachePolicyId,
