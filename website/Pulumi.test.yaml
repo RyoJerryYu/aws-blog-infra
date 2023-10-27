@@ -2,4 +2,4 @@ config:
   aws:region: ap-northeast-1
   ref:org: RyoJerryYu
   web:domainName: test.ryo-okami.xyz
-  web:elbDomainName: alb.ryo-okami.xyz
+  web:serverInstanceId: i-096fe06c10bc72e06

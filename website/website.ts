@@ -21,7 +21,7 @@ function getZoneFromDomain(
 
 export interface WebSiteArgs {
   domainName: string;
-  elbDomainName: string;
+  serverInstanceId: string;
   logBucketName: pulumi.Input<string>;
   logBucketDomainName: pulumi.Input<string>;
   elbCachePolicyId: pulumi.Input<string>;
@@ -53,6 +53,13 @@ export class WebSite extends pulumi.ComponentResource {
     /**
      * Bucket
      */
+
+    const serverOriginId = "server";
+    const backendInstanceIp = pulumi.secret(
+      aws.ec2.getInstanceOutput({
+        instanceId: args.serverInstanceId,
+      }).publicIp
+    );
 
     const contentBucket = new aws.s3.Bucket(
       "contentBucket",
@@ -147,11 +154,11 @@ export class WebSite extends pulumi.ComponentResource {
             },
           },
           {
-            originId: args.elbDomainName,
-            domainName: args.elbDomainName,
+            originId: serverOriginId,
+            domainName: backendInstanceIp,
             customOriginConfig: {
-              originProtocolPolicy: "https-only",
-              httpPort: 80,
+              originProtocolPolicy: "http-only",
+              httpPort: 1996,
               httpsPort: 443,
               originSslProtocols: ["TLSv1", "TLSv1.1", "TLSv1.2"],
             },
@@ -161,7 +168,7 @@ export class WebSite extends pulumi.ComponentResource {
 
         orderedCacheBehaviors: [
           {
-            targetOriginId: args.elbDomainName,
+            targetOriginId: serverOriginId,
             pathPattern: "/caculate/*",
             viewerProtocolPolicy: "redirect-to-https",
             allowedMethods: ["GET", "HEAD", "OPTIONS"],
